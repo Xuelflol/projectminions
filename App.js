@@ -25,8 +25,8 @@ export default class App extends Component {
             enemyIdentity: -1,
             Speed: 5010,
             //initial state for Enemy
-            enemyStart: new Animated.Value(Math.floor(Math.random() * WIDTH * 0.5)),
-            melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT * 0.5)),
+            enemyStart: new Animated.Value(Math.floor(Math.random() * WIDTH)),
+            melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT)),
             enemyDown: new Animated.Value(0),
             appleRight: new Animated.Value(0),
             melonLeft: new Animated.Value(WIDTH),
@@ -90,6 +90,7 @@ export default class App extends Component {
     }
     animatedEnemy() {
         var r = Math.floor(Math.random() * 4) + 1;
+        //const r = 1;
         var refreshCheck;
         if (this.state.Speed._value > 500) {
             this.setState({
@@ -111,22 +112,30 @@ export default class App extends Component {
             var b = this.state.enemyDown._value;
             var c = this.state.flyBob._value;
             var d = this.state.enemyStart._value;
-            // var result = Math.sqrt(a - d) + Math.sqrt(c - b);
-            const result = 2600;
+            // var result = Math.pow((a - d), 2) + Math.pow((c - b), 2);
+            //const result = 2600;
 
             this.setState({
                 enemyIdentity: 0 //enemy
             })
 
             refreshCheck = setInterval(() => {
-                if (result <= 2500) {
+                console.log("x-axis distance" + (this.state.moveBob._value - this.state.enemyStart._value));
+                console.log("y-axis distance" + (this.state.flyBob._value - this.state.enemyDown._value));
+
+                console.log(WIDTH);
+                console.log(HEIGHT);
+                var result = Math.pow((this.state.moveBob._value - this.state.enemyStart._value), 2) + Math.pow((this.state.flyBob._value - this.state.enemyDown._value), 2);
+                console.log("center distance square" + result);
+                if (result < 2100) {
                     clearInterval(refreshCheck)
                     this.setState({
                         gameOver: true
                     });
                     this.gameOver();
                 }
-            }, 50);
+            }, 10);
+
             Animated.timing(
                 this.state.enemyDown,
                 {
@@ -144,7 +153,7 @@ export default class App extends Component {
                     });
                     console.log("enemy starts at y-axis" + this.state.enemyDown);
                     this.setState({
-                        enemyStart: new Animated.Value(a)
+                        enemyStart: new Animated.Value(this.state.moveBob._value)
                     })
                     console.log("enemy starts at x-axis" + this.state.enemyStart);
 
@@ -166,6 +175,21 @@ export default class App extends Component {
             this.setState({
                 enemyIdentity: 1 //apple
             })
+            refreshCheck = setInterval(() => {
+                console.log("x-axis distance" + (this.state.moveBob._value - this.state.enemyStart._value));
+                console.log("y-axis distance" + (this.state.flyBob._value - this.state.enemyDown._value));
+                console.log("center distance square" + result);
+                console.log(WIDTH);
+                console.log(HEIGHT);
+                var result = Math.pow((this.state.moveBob._value - this.state.appleRight._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2);
+                if (result < 2100) {
+                    clearInterval(refreshCheck)
+                    this.setState({
+                        gameOver: true
+                    });
+                    this.gameOver();
+                }
+            }, 10);
             Animated.timing(
                 this.state.appleRight,
                 {
@@ -183,7 +207,7 @@ export default class App extends Component {
                         appleRight: new Animated.Value(0)
                     });
                     this.setState({
-                        melonStart: new Animated.Value(ya)
+                        melonStart: new Animated.Value(this.state.flyBob._value)
                     })
                     this.animatedEnemy();
                 }
@@ -197,6 +221,22 @@ export default class App extends Component {
             this.setState({
                 enemyIdentity: 2 //orange
             })
+            //check collision every 10 ms
+            refreshCheck = setInterval(() => {
+                // console.log("x-axis distance" + (this.state.moveBob._value - this.state.enemyStart._value));
+                //console.log("y-axis distance" + (this.state.flyBob._value - this.state.enemyDown._value));
+                // console.log("center distance square" + result);
+
+                var result = Math.pow((this.state.moveBob._value - this.state.enemyStart._value), 2) + Math.pow((this.state.flyBob._value - this.state.orangeUp._value), 2);
+                if (result < 2100) {
+                    clearInterval(refreshCheck)
+                    this.setState({
+                        gameOver: true
+                    });
+                    this.gameOver();
+                }
+            }, 10);
+            //animation enemy
             Animated.timing(
                 this.state.orangeUp,
                 {
@@ -213,7 +253,7 @@ export default class App extends Component {
                         orangeUp: new Animated.Value(HEIGHT)
                     });
                     this.setState({
-                        enemyStart: new Animated.Value(xa)
+                        enemyStart: new Animated.Value(this.state.moveBob._value)
                     })
                     this.animatedEnemy();
                 }
@@ -227,6 +267,22 @@ export default class App extends Component {
             this.setState({
                 enemyIdentity: 3 //melon
             })
+
+            refreshCheck = setInterval(() => {
+                console.log("x-axis distance" + (this.state.moveBob._value - this.state.enemyStart._value));
+                console.log("y-axis distance" + (this.state.flyBob._value - this.state.enemyDown._value));
+                console.log("center distance square" + result);
+                console.log(WIDTH);
+                console.log(HEIGHT);
+                var result = Math.pow((this.state.moveBob._value - this.state.melonLeft._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2);
+                if (result < 2100) {
+                    clearInterval(refreshCheck)
+                    this.setState({
+                        gameOver: true
+                    });
+                    this.gameOver();
+                }
+            }, 10);
             Animated.timing(
                 this.state.melonLeft,
                 {
@@ -243,7 +299,7 @@ export default class App extends Component {
                         melonLeft: new Animated.Value(WIDTH)
                     });
                     this.setState({
-                        melonStart: new Animated.Value(ya)
+                        melonStart: new Animated.Value(this.state.flyBob._value)
                     });
                     this.animatedEnemy();
                 }
