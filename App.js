@@ -10,6 +10,8 @@ import Orange from './Orange';
 import { GameEngine } from "react-native-game-engine";
 
 const {width: WIDTH, height: HEIGHT} = Dimensions.get("window");
+const startx = WIDTH / 2;
+const starty = HEIGHT / 2;
 
 
 export default class App extends Component {
@@ -17,8 +19,8 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            moveBob: new Animated.Value(40), //Init value for bob position
-            flyBob: new Animated.Value(200),
+            moveBob: new Animated.Value(startx), //Init value for bob position
+            flyBob: new Animated.Value(starty),
             side: 'left',
             points: 0,
             gameOver: false,
@@ -26,7 +28,7 @@ export default class App extends Component {
             Speed: 5010,
             //initial state for Enemy
             enemyStart: new Animated.Value(Math.floor(Math.random() * WIDTH)),
-            melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT)),
+            melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT * 0.5)),
             enemyDown: new Animated.Value(0),
             appleRight: new Animated.Value(0),
             melonLeft: new Animated.Value(WIDTH),
@@ -36,6 +38,7 @@ export default class App extends Component {
 
     moveIt(direction) {
         let current = this.state.moveBob._value;
+        let currenty = this.state.flyBob._value;
 
         if (direction == 'right') {
             this.setState({
@@ -68,7 +71,7 @@ export default class App extends Component {
             Animated.spring(
                 this.state.flyBob,
                 {
-                    toValue: this.state.flyBob._value - 30,
+                    toValue: currenty - 30,
                     tension: 100,
                 }
             ).start();
@@ -78,7 +81,7 @@ export default class App extends Component {
             Animated.spring(
                 this.state.flyBob,
                 {
-                    toValue: this.state.flyBob._value + 30,
+                    toValue: currenty + 30,
                     tension: 100,
                 }
             ).start();
@@ -90,7 +93,8 @@ export default class App extends Component {
     }
     animatedEnemy() {
         var r = Math.floor(Math.random() * 4) + 1;
-        //const r = 1;
+        //var r = Math.floor(Math.random() * 2) + 1;
+        // const r = 2;
         var refreshCheck;
         if (this.state.Speed._value > 500) {
             this.setState({
@@ -176,17 +180,21 @@ export default class App extends Component {
                 enemyIdentity: 1 //apple
             })
             refreshCheck = setInterval(() => {
-                console.log("x-axis distance" + (this.state.moveBob._value - this.state.enemyStart._value));
-                console.log("y-axis distance" + (this.state.flyBob._value - this.state.enemyDown._value));
-                console.log("center distance square" + result);
-                console.log(WIDTH);
-                console.log(HEIGHT);
-                var result = Math.pow((this.state.moveBob._value - this.state.appleRight._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2);
-                if (result < 2100) {
+
+                console.log("x-axis distance" + (this.state.moveBob._value - this.state.appleRight._value));
+                console.log("y-axis distance" + (this.state.flyBob._value - this.state.melonStart._value));
+                //console.log("it's normal !center for strawberry distace square" + Math.pow((this.state.moveBob._value - this.state.appleRight._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2));
+                var result = Math.pow((this.state.moveBob._value - this.state.appleRight._value), 2) + Math.pow((this.state.flyBob._value - yb), 2);
+                console.log("distance for strawberry square" + result)
+                console.log(yb);
+                console.log(this.state.melonStart._value);
+                if (result < 1100) {
                     clearInterval(refreshCheck)
                     this.setState({
                         gameOver: true
                     });
+
+                    // console.log("center for strawberry distace square" + Math.pow((this.state.moveBob._value - this.state.appleRight._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2));
                     this.gameOver();
                 }
             }, 10);
@@ -194,7 +202,7 @@ export default class App extends Component {
                 this.state.appleRight,
                 {
                     toValue: WIDTH,
-                    duration: this.state.Speed,
+                    duration: this.state.Speed / 2,
                 }
             ).start(event => {
                 if (event.finished && this.state.gameOver == false) {
@@ -207,7 +215,7 @@ export default class App extends Component {
                         appleRight: new Animated.Value(0)
                     });
                     this.setState({
-                        melonStart: new Animated.Value(this.state.flyBob._value)
+                        melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT * 0.5))
                     })
                     this.animatedEnemy();
                 }
@@ -241,7 +249,7 @@ export default class App extends Component {
                 this.state.orangeUp,
                 {
                     toValue: 0,
-                    duration: this.state.Speed / 2,
+                    duration: this.state.Speed,
                 }
             ).start(event => {
                 if (event.finished && this.state.gameOver == false) {
@@ -275,7 +283,7 @@ export default class App extends Component {
                 console.log(WIDTH);
                 console.log(HEIGHT);
                 var result = Math.pow((this.state.moveBob._value - this.state.melonLeft._value), 2) + Math.pow((this.state.flyBob._value - this.state.melonStart._value), 2);
-                if (result < 2100) {
+                if (result < 1100) {
                     clearInterval(refreshCheck)
                     this.setState({
                         gameOver: true
@@ -299,7 +307,7 @@ export default class App extends Component {
                         melonLeft: new Animated.Value(WIDTH)
                     });
                     this.setState({
-                        melonStart: new Animated.Value(this.state.flyBob._value)
+                        melonStart: new Animated.Value(Math.floor(Math.random() * HEIGHT * 0.5))
                     });
                     this.animatedEnemy();
                 }
@@ -313,6 +321,7 @@ export default class App extends Component {
 
 
     render() {
+        console.ignoredYellowBox = ['Remote debugger'];
         const Enemys = [];
         Enemys.push(<Enemy startEnemy = {this.state.enemyStart} downEnemy = {this.state.enemyDown}/>);
         Enemys.push(<Apple startApple = {this.state.melonStart} rightApple = {this.state.appleRight}/>);
